@@ -1,0 +1,33 @@
+@app.route('/foo')
+def foo():
+    return '<h1>Foo page</h1><a href="%s">Do something</a>' % url_for('do_something')
+
+
+@app.route('/bar')
+def bar():
+    return '<h1>Bar page</h1><a href="%s">Do something </a>' % url_for('do_something')
+
+
+@app.route('/do_something')
+def do_something():
+    # do something
+    return redirect(url_for('hello'))
+
+获取上一个页面的URL
+    要重定向回上一个页面，最关键的是获取上一个页面的URL。上一个页面的URL
+    一般可以通过两种方式获取：
+        return redirect(request.referrer)
+
+        除了自动从referrer获取，另一种更常见的方式是在URL中手动加入包含当前页面URL的查询参数，这个查询参数一般命名为next。
+            @app.route('/foo')
+            def foo():
+                return '<h1>Foo page</h1><a href="%s">Do something and redirect</a>' % url_for('do_something',next=request.full_path)
+
+            @app.route('/bar')
+            def bar():
+                return '<h1>Bar page</h1><a href="%s">Do something and redirect</a>' % url_for('do_something',next=request.full_path)
+
+        在do_something视图中，我们获取这个next值，然后重定向到对应的路径：
+            return redirect(request.args.get('next'))
+
+            return redirect(request.args.get('next', url_for('hello')))

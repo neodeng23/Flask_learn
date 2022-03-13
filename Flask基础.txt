@@ -30,3 +30,50 @@ MVC（Model-View-Controller，模型-视图-控制器）
         teardown_request        注册一个函数，即使有未处理的异常抛出，会在每个请求结束后运行，如果发生异常，会传入异常对象作为参数到注册表中
         after_this_request      在视图函数内注册一个函数，会在这个请求结束后运行
 
+        teardown_appcontext     使用它注册的回调函数会在程序上下文被销毁时调用，而且通常也会在请求上下文被销毁时调用
+
+响应格式
+    在HTTP响应中，数据可以通过多种格式传输。大多数情况下，我们会使用HTML格式，这也是Flask中的默认设置。
+    在特定的情况下，我们也会使用其他格式。不同的响应数据格式需要设置不同的MIME类型，MIME类型在首部的Content-Type字段中定义，
+    以默认的HTML类型为例：
+        Content-Type: text/html; charset=utf-8
+    Response类的常用属性和方法：
+        headers:    一个Werkzeug的Headers对象，表示响应头部，可以像字典一样操作
+        status:     状态码，文本类型
+        status_code:状态码，整型
+        mimetype:   MIME类型（仅包括内容类型部分）
+        set_cookie  用来设置一个cookie
+
+来一块Cookie
+    HTTP是无状态（stateless）协议。也就是说，在一次请求响应结束后，服务器不会留下任何关于对方状态的信息。
+    但是对于某些Web程序来说，客户端的某些信息又必须被记住，比如用户的登录状态，这样才可以根据用户的状态来返回不同的响应。
+    为了解决这类问题，就有了Cookie技术。Cookie技术通过在请求和响应报文中添加Cookie数据来保存客户端的状态信息。
+
+    Cookie指Web服务器为了存储某些数据（比如用户信息）而保存在浏览器上的小型文本数据。
+    浏览器会在一定时间内保存它，并在下一次向同一个服务器发送请求时附带这些数据。
+    Cookie通常被用来进行用户会话管理（比如登录状态），保存用户的个性化信息（比如语言偏好，视频上次播放的位置，网站主题选项等）以及记录和收集用户浏览数据以用来分析用户行为等。
+
+    如果想要在响应中添加一个cookie，最方便的方法是使用Response类提供的set_cookie（）方法。
+    要使用这个方法，我们需要先使用make_response（）方法手动生成一个响应对象，传入响应主体作为参数。这个响应对象默认实例化内置的Response类。
+
+session：安全的Cookie
+    在Flask中，session对象用来加密Cookie。默认情况下，它会把数据存储在浏览器上一个名为session的cookie里。
+    1.设置程序密钥
+        session通过密钥对数据进行签名以加密数据，因此，我们得先设置一个密钥。这里的密钥就是一个具有一定复杂度和随机性的字符串，比如“Drmhze6EPcv0fN_81Bj-nA”。
+        程序的密钥可以通过Flask.secret_key属性或配置变量SECRET_KEY设置，比如：app.secret_key = 'secret string'
+    2.模拟用户认证
+        使用session模拟用户的认证功能
+        session对象可以像字典一样操作，我们向session中添加一个logged-in cookie，将它的值设为True，表示用户已认证。
+
+    默认情况下，session cookie会在用户关闭浏览器时删除。通过将session.permanent属性设为True可以将session的有效期延长为Flask.permanent_session_lifetime属性值对应的datetime.timedelta对象，
+    也可通过配置变量PERMANENT_SESSION_LIFETIME设置，默认为31天。
+
+上下文全局变量:
+    Flask将请求报文封装在request对象中。按照一般的思路，如果我们要在视图函数中使用它，就得把它作为参数传入视图函数，就像我们接收URL变量一样
+    Flask会在每个请求产生后自动激活当前请求的上下文，激活请求上下文后，request被临时设为全局可访问。而当每个请求结束后，Flask就销毁对应的请求上下文。
+    全局变量
+        current_app 处理请求的当前程序实例
+        g   替代python的全局变量用法，确保仅在当前请求中可用，用于存储全局数据，每次请求都会重设
+        request 封装客户端发出的请求报文数据
+        session 用于记住请求之间的数据，通过签名的cookie实现
+
