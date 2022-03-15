@@ -1,0 +1,76 @@
+Flask的模板引擎——Jinja2
+
+
+<p>这是列表my_list的第一个元素：{{ my_list[0] }}</p>
+<p>这是元组my_tuple的第一个元素：{{ my_tuple[0] }}</p>
+<p>这是字典my_dict的键为name的值：{{ my_dict['name'] }}</p>
+<p>这是函数my_func的返回值：{{ my_func() }}</p>
+<p>这是对象my_object调用某方法的返回值：{{ my_object.name() }}</p>
+
+如果多个模板都需要使用同一变量，那么比起在多个视图函数中重复传入，更好的方法是能够设置一个模板全局变量。
+Flask提供了一个app.context_processor装饰器，可以用来注册模板上下文处理函数，它可以帮我们完成统一传入变量的工作。
+当我们调用render_template（）函数渲染任意一个模板时，所有使用app.context_processor装饰器注册的模板上下文处理函数（包括Flask内置的上下文处理函数）都会被执行，
+这些函数的返回值会被添加到模板中，因此我们可以在模板中直接使用foo变量。
+    @app.context_processor
+    def inject_foo():
+        foo = 'I am foo.'
+        return dict(foo=foo) # 等同于return {'foo': foo}
+
+过滤器
+    使用： {{ movies|length }}
+
+    {% filter upper %}
+        This text becomes uppercase.
+    {% endfilter %}
+
+模板环境对象
+    添加自定义全局对象
+        app.jinja_env.globals['bar'] = bar
+        app.jinja_env.globals['foo'] = foo
+
+    添加自定义过滤器
+        def smiling(s):
+            return s + ' :)'
+        app.jinja_env.filters['smiling'] = smilin
+
+局部模板
+    {% include '_banner.html' %}
+
+
+宏
+    定义一个宏
+        {% macro qux(amount=1) %}
+        {% if amount == 1 %}
+            I am qux.
+        {% elif amount > 1 %}
+            We are quxs.
+        {% endif %}
+        {% endmacro %}
+
+    使用这个宏
+        {% from 'macros.html' import qux %}
+        ...
+        {{ qux(amount=5) }}
+
+模板继承
+    父模板：
+        编写块
+        {% block content %}
+        ...
+        {% endblock content %}
+
+    子模板
+        {% extends 'base.html' %}
+        {% block content %}
+        .....
+        {% endblock %}
+
+加载静态文件
+    通过url_for（'static'，filename='avatar.jpg'）获取这个文件的URL，这个函数调用生成的URL为/static/avatar.jpg
+    在浏览器中输入http://localhost:5000/static/avatar.jpg 即可访问这个图片
+    <img src="{{ url_for('static', filename='avatar.jpg') }}" width="50">
+
+加载CSS
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename= 'styles.css' ) }}">
+
+

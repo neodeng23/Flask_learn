@@ -77,3 +77,25 @@ session：安全的Cookie
         request 封装客户端发出的请求报文数据
         session 用于记住请求之间的数据，通过签名的cookie实现
 
+对URL进行安全验证
+    from urlparse import urlparse, urljoin # Python3需要从urllib.parse导入
+    from flask import request
+
+    def is_safe_url(target):
+        # 我们创建了一个URL验证函数is_safe_url（），用来验证next变量值是否属于程序内部URL。
+        ref_url = urlparse(request.host_url)
+        test_url = urlparse(urljoin(request.host_url, target))
+        return test_url.scheme in ('http', 'https') and ref_url.netloc == test_url.netloc
+
+    def redirect_back(default='hello', **kwargs):
+        # 这个函数接收目标URL作为参数，并通过request.host_url获取程序内的主机URL，然后使用urljoin（）函数将目标URL转换为绝对URL。
+        # 接着，分别使用urlparse模块提供的urlparse（）函数解析两个URL，最后对目标URL的URL模式和主机地址进行验证，确保只有属于程序内部的URL才会被返回。
+        # 在执行重定向回上一个页面的redirect_back（）函数中，我们使用is_safe_url（）验证next和referer的值：
+        for target in request.args.get('next'), request.referrer:
+            if not target:
+                continue
+            if is_safe_url(target):
+                return redirect(target)
+        return redirect(url_for(default, **kwargs)
+
+
