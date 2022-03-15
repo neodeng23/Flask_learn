@@ -1,0 +1,24 @@
+AJAX
+    指异步Javascript和XML（Asynchronous JavaScript And XML），它不是编程语言或通信协议，而是一系列技术的组合体。
+    简单来说，AJAX基于XMLHttpRequest 让我们可以在不重载页面的情况下和服务器进行数据交换。
+    加上JavaScript和DOM（Document ObjectModel，文档对象模型），我们就可以在接收到响应数据后局部更新页面。
+    而XML指的则是数据的交互格式，也可以是纯文本（Plain Text）、HTML或JSON。
+    顺便说一句，XMLHttpRequest不仅支持HTTP协议，还支持FILE和FTP协议。
+
+    以删除某个资源为例，在普通的程序中流程如下：
+        1）当“删除”按钮被单击时会发送一个请求，页面变空白，在接收到响应前无法进行其他操作。
+        2）服务器端接收请求，执行删除操作，返回包含整个页面的响应。
+        3）客户端接收到响应，重载整个页面。
+
+    使用AJAX技术时的流程如下：
+        1）当单击“删除”按钮时，客户端在后台发送一个异步请求，页面不变，在接收响应前可以进行其他操作。
+        2）服务器端接收请求后执行删除操作，返回提示消息或是无内容的204响应。
+        3）客户端接收到响应，使用JavaScript更新页面，移除资源对应的页面元素。
+
+使用jQuery发送AJAX请求
+    jQuery是流行的JavaScript库，它包装了JavaScript，让我们通过更简单的方式编写JavaScript代码。
+    对于AJAX，它提供了多个相关的方法，使用它可以很方便地实现AJAX操作。
+    更重要的是，jQuery处理了不同浏览器的AJAX兼容问题，我们只需要编写一套代码，就可以在所有主流的浏览器正常运行。
+
+HTTP服务器端推送
+    HTTP Server Push
